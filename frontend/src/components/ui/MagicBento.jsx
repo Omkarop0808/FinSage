@@ -9,34 +9,39 @@ const cardData = [
 {
   title: 'Analytics',
   description: 'Gain detailed insights by analyzing user behavior across experiments.',
-  label: 'Insights'
+  label: 'Insights',
+  image: '/images/analytics_bento.png'
 },
 {
   title: 'Dashboard',
   description: 'Access a centralized view to monitor all your experiments.',
-  label: 'Overview'
+  label: 'Overview',
+  image: '/images/dashboard_bento.png'
 },
 {
   title: 'Collaboration',
   description: 'Enable your team to work together seamlessly on designing and running experiments.',
-  label: 'Teamwork'
+  label: 'Teamwork',
+  image: '/images/collaboration_bento.png'
 },
 {
   title: 'Automation',
   description: 'Streamline repetitive tasks and workflows to save time and reduce errors.',
-  label: 'Efficiency'
+  label: 'Efficiency',
+  image: '/images/automation_bento.png'
 },
 {
   title: 'Integration',
   description: 'Connect your favorite tools for smoother workflows..',
-  label: 'Connectivity'
+  label: 'Connectivity',
+  image: '/images/integration_bento.png'
 },
 {
   title: 'Security',
   description: "Provide top-level security and privacy for all experiment data.",
-  label: 'Protection'
+  label: 'Protection',
+  image: '/images/security_bento.png'
 }
-
 ];
 
 const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
@@ -338,6 +343,16 @@ const MagicBento = ({
                   {card.label}
                 </div>
               </div>
+              
+              {card.image && (
+                <div className="flex-1 w-full flex items-center justify-center my-4 relative z-10 overflow-hidden rounded-xl">
+                  <img 
+                    src={card.image} 
+                    alt={card.title} 
+                    className="w-full h-full max-h-[120px] object-cover mix-blend-screen opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300"
+                  />
+                </div>
+              )}
               
               <div className="flex flex-col relative z-10">
                 <h2 className={`font-normal text-lg mb-1 ${textAutoHide ? 'line-clamp-1' : ''}`}>
