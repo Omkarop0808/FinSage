@@ -15,14 +15,22 @@ const createOrUpdateStudent = async (req, res) => {
     }
 
     let student = await Student.findOne({ firebaseUid });
-    console.log('Existing student found:', student ? 'Yes' : 'No');
+    console.log('Existing student found by firebaseUid:', student ? 'Yes' : 'No');
+
+    if (!student) {
+      student = await Student.findOne({ email });
+      console.log('Existing student found by email:', student ? 'Yes' : 'No');
+      if (student) {
+        student.firebaseUid = firebaseUid;
+        console.log('Re-associating student', student._id, 'with new firebaseUid:', firebaseUid);
+      }
+    }
 
     if (student) {
       student.email = email;
       student.profilePhoto = profilePhoto || student.profilePhoto;
       student.contactNumber = contactNumber || student.contactNumber;
-      // We don't overwrite name here to prevent reverting user changes
-      // Name updates should happen via the profile update endpoint
+      if (name) student.name = name; // If name is provided (e.g. from Google auth sync), make sure it is updated/saved
       await student.save();
       console.log('Student updated:', student._id);
     } else {

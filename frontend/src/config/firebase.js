@@ -23,8 +23,13 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 let analytics = null;
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+if (typeof window !== "undefined" && firebaseConfig.measurementId) {
+  try {
+    analytics = getAnalytics(app);
+    console.log("Firebase Analytics initialized");
+  } catch (error) {
+    console.warn("Firebase Analytics failed to initialize:", error);
+  }
 }
 
 console.log("Firebase initialized successfully");

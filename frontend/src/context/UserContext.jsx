@@ -13,6 +13,54 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const syncStudentWithBackend = async (firebaseUser, name = null) => {
+    console.log("UserContext: Syncing student with backend");
+    setError(null);
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/student`, {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: name || firebaseUser.displayName || firebaseUser.email.split('@')[0],
+        profilePhoto: firebaseUser.photoURL || null,
+        contactNumber: null
+      });
+      
+      console.log("UserContext: Backend response:", response.data);
+      
+      if (response.data.success) {
+        setStudent(response.data.data);
+        localStorage.setItem("student", JSON.stringify(response.data.data));
+        console.log("UserContext: Student synced successfully");
+        return response.data.data;
+      } else {
+        throw new Error(response.data.message || "Failed to sync student");
+      }
+    } catch (error) {
+      console.error("UserContext: Error syncing student:", error);
+      setError(error.response?.data?.message || error.message);
+      throw error;
+    }
+  };
+
+  const fetchStudent = async (firebaseUid) => {
+    console.log("UserContext: Fetching student:", firebaseUid);
+    
+    try {
+      const response = await axios.get(`${API_URL}/api/auth/student/${firebaseUid}`);
+      
+      if (response.data.success) {
+        setStudent(response.data.data);
+        localStorage.setItem("student", JSON.stringify(response.data.data));
+        console.log("UserContext: Student fetched successfully");
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("UserContext: Error fetching student:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     console.log("UserContext: Setting up auth state listener");
     
@@ -62,6 +110,18 @@ export function UserProvider({ children }) {
         } catch (e) {
           console.error("UserContext: Error getting token:", e);
         }
+
+        // Fetch or sync student profile
+        try {
+          console.log("UserContext: Fetching student profile on auth state change");
+          const studentData = await fetchStudent(firebaseUser.uid);
+          if (!studentData) {
+            console.log("UserContext: Student profile not found on backend, attempting to sync...");
+            await syncStudentWithBackend(firebaseUser);
+          }
+        } catch (syncError) {
+          console.error("UserContext: Failed to fetch/sync student profile:", syncError);
+        }
       } else {
         console.log("UserContext: No user, clearing data");
         setUser(null);
@@ -79,54 +139,6 @@ export function UserProvider({ children }) {
       unsubscribe();
     };
   }, []);
-
-  const syncStudentWithBackend = async (firebaseUser, name = null) => {
-    console.log("UserContext: Syncing student with backend");
-    setError(null);
-    
-    try {
-      const response = await axios.post(`${API_URL}/api/auth/student`, {
-        firebaseUid: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: name || firebaseUser.displayName || firebaseUser.email.split('@')[0],
-        profilePhoto: firebaseUser.photoURL || null,
-        contactNumber: null
-      });
-      
-      console.log("UserContext: Backend response:", response.data);
-      
-      if (response.data.success) {
-        setStudent(response.data.data);
-        localStorage.setItem("student", JSON.stringify(response.data.data));
-        console.log("UserContext: Student synced successfully");
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message || "Failed to sync student");
-      }
-    } catch (error) {
-      console.error("UserContext: Error syncing student:", error);
-      setError(error.response?.data?.message || error.message);
-      throw error;
-    }
-  };
-
-  const fetchStudent = async (firebaseUid) => {
-    console.log("UserContext: Fetching student:", firebaseUid);
-    
-    try {
-      const response = await axios.get(`${API_URL}/api/auth/student/${firebaseUid}`);
-      
-      if (response.data.success) {
-        setStudent(response.data.data);
-        localStorage.setItem("student", JSON.stringify(response.data.data));
-        console.log("UserContext: Student fetched successfully");
-        return response.data.data;
-      }
-    } catch (error) {
-      console.error("UserContext: Error fetching student:", error);
-      return null;
-    }
-  };
 
   const logout = async () => {
     console.log("UserContext: Logging out");

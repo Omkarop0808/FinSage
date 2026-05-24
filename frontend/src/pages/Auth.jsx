@@ -163,10 +163,13 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     console.log("Auth: Google sign-in initiated");
-    setLoading(true);
     
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      // Initiate the popup synchronously within the click event thread to avoid popup blockers
+      const signInPromise = signInWithPopup(auth, googleProvider);
+      setLoading(true);
+      
+      const result = await signInPromise;
       console.log("Auth: Google sign-in successful:", result.user.uid);
       
       // Check if this is a new user by checking additionalUserInfo
