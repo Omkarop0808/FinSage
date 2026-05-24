@@ -80,7 +80,7 @@ const Hero = () => {
             <img
               src={
                 theme === 'dark'
-                  ? "/dark mode.jpeg" 
+                  ? "/dark mode.png" 
                   : "/light mode.jpeg" 
               }
               alt={`Dashboard Interface - ${theme === 'dark' ? 'Dark' : 'Light'} Mode`}
