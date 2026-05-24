@@ -81,7 +81,7 @@ const Hero = () => {
               src={
                 theme === 'dark'
                   ? "/dark mode.png" 
-                  : "/light mode.jpeg" 
+                  : "/light mode.png" 
               }
               alt={`Dashboard Interface - ${theme === 'dark' ? 'Dark' : 'Light'} Mode`}
               className="relative w-full h-auto shadow-md rounded border border-border transition-all duration-500"
