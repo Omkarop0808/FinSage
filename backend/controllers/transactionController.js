@@ -387,19 +387,35 @@ exports.getTransactionStats = async (req, res) => {
     // Calculate date range
     const now = new Date();
     let startDate;
+    let endDate;
 
-    switch (period) {
-      case 'week':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case 'month':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        break;
-      case 'year':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      default:
-        startDate = new Date(0); // All time
+    if (req.query.startDate) {
+      startDate = new Date(req.query.startDate);
+    } else {
+      switch (period) {
+        case 'week':
+          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case 'month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'year':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+        case 'all':
+        default:
+          startDate = new Date(0); // All time
+      }
+    }
+
+    if (req.query.endDate) {
+      endDate = new Date(req.query.endDate);
+    }
+
+    // Build the date match condition dynamically
+    const dateMatch = { $gte: startDate };
+    if (endDate) {
+      dateMatch.$lte = endDate;
     }
 
     // Aggregate stats
@@ -409,7 +425,7 @@ exports.getTransactionStats = async (req, res) => {
         {
           $match: {
             student: student._id,
-            date: { $gte: startDate },
+            date: dateMatch,
             excludeFromReports: false
           }
         },
@@ -427,7 +443,7 @@ exports.getTransactionStats = async (req, res) => {
           $match: {
             student: student._id,
             type: 'expense',
-            date: { $gte: startDate },
+            date: dateMatch,
             excludeFromReports: false
           }
         },

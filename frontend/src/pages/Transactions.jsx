@@ -142,9 +142,17 @@ const Transactions = () => {
       if (filters.startDate) params.append('startDate', filters.startDate.toISOString());
       if (filters.endDate) params.append('endDate', filters.endDate.toISOString());
 
+      const statsParams = new URLSearchParams();
+      if (filters.startDate || filters.endDate) {
+        if (filters.startDate) statsParams.append('startDate', filters.startDate.toISOString());
+        if (filters.endDate) statsParams.append('endDate', filters.endDate.toISOString());
+      } else {
+        statsParams.append('period', 'all');
+      }
+
       const [transactionsRes, statsRes] = await Promise.all([
         axios.get(`${API_URL}/api/transactions/${user.uid}?${params}`),
-        axios.get(`${API_URL}/api/transactions/stats/${user.uid}?period=month`)
+        axios.get(`${API_URL}/api/transactions/stats/${user.uid}?${statsParams}`)
       ]);
 
       if (transactionsRes.data.success) {
