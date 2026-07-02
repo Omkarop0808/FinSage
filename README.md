@@ -2,7 +2,8 @@
 
 # FinSage
 
-[![FinSage](https://img.shields.io/badge/FinSage-Fintech%20Platform-2ecc71?style=for-the-badge&logo=github&logoColor=white)](https://github.com/romeirofernandes/MoneyCouncil)
+[![FinSage](https://img.shields.io/badge/FinSage-Fintech%20Platform-2ecc71?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Codemakerom/Finsage)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel&logoColor=white)](https://finexa-1.vercel.app/)
 
 </div>
 
